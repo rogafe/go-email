@@ -47,11 +47,13 @@ func WriteHTML(eml string, config structs.Config) {
 
 	var filename string
 	if MessageId, err := header.AddressList("Message-Id"); err == nil {
-		a := strings.ReplaceAll(MessageId[0].String(), "<", "")
-		filename = strings.ReplaceAll(a, ">", "")
+		if len(MessageId) != 0 {
+			a := strings.ReplaceAll(MessageId[0].String(), "<", "")
+			filename = strings.ReplaceAll(a, ">", "")
+		}
 	}
 
-	folder := fmt.Sprintf("%s/%s", config.LocalFolder, filename)
+	folder := fmt.Sprintf("%s/%s/%s", config.LocalFolder, config.RemoteFolder, filename)
 
 	utils.CreateFolder(folder)
 	err = ioutil.WriteFile(fmt.Sprintf("%s/message.html", folder), []byte(Body), 0644)

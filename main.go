@@ -6,6 +6,7 @@ import (
 	"go-email/internal/structs"
 	"log"
 	"os"
+	"strings"
 
 	_ "github.com/emersion/go-message/charset"
 	"gopkg.in/ini.v1"
@@ -24,14 +25,6 @@ func main() {
 
 	}
 
-	// localFolder := cfg.Section("go-email").Key("local_folder")
-
-	// log.Println(config)
-
-	// CreateFolder(localFolder.String())
-
-	// CreateFolder(fmt.Sprintf("%s/testing", localFolder))
-
 	config := structs.Config{
 		Uri:          fmt.Sprintf("%s:%s", cfg.Section("email").Key("host").String(), cfg.Section("email").Key("port").String()),
 		User:         cfg.Section("email").Key("username").String(),
@@ -39,6 +32,11 @@ func main() {
 		RemoteFolder: cfg.Section("email").Key("remote_folder").String(),
 		TLS:          cfg.Section("email").Key("ssl").String(),
 		LocalFolder:  cfg.Section("go-email").Key("local_folder").String(),
+		OutputTypes:  strings.Split(cfg.Section("go-email").Key("output_types").String(), ","),
 	}
-	email.GetEmails(config)
+	if config.RemoteFolder == "all" {
+		email.GetAllEmails(config)
+	} else {
+		email.GetEmails(config)
+	}
 }
