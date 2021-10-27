@@ -1,6 +1,7 @@
 package email
 
 import (
+	"crypto/tls"
 	"go-email/internal/output"
 	"go-email/internal/structs"
 	"go-email/internal/utils"
@@ -11,9 +12,18 @@ import (
 )
 
 func GetAllEmails(config structs.Config) {
-	// log.Println(config.User, config.Password, config.Uri)
+	var c *client.Client
+	var err error
 
-	c, err := client.DialTLS(config.Uri, nil)
+	switch {
+	case config.TLS && config.InsecureSkipVerify:
+		c, err = client.DialTLS(config.Uri, &tls.Config{InsecureSkipVerify: true})
+	case config.TLS && !config.InsecureSkipVerify:
+		c, err = client.DialTLS(config.Uri, nil)
+	case !config.TLS:
+		c, err = client.Dial(config.Uri)
+	}
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,9 +59,9 @@ func GetAllEmails(config structs.Config) {
 
 		log.Printf("Downloding %d emails\n", mbox.Messages)
 		seqset := new(imap.SeqSet)
-		// seqset.AddRange(1, mbox.Messages)
+		seqset.AddRange(1, mbox.Messages)
 		// seqset.AddRange(mbox.Messages, mbox.Messages)
-		seqset.AddRange(mbox.Messages-5, mbox.Messages)
+		// seqset.AddRange(mbox.Messages-5, mbox.Messages)
 
 		messages := make(chan *imap.Message, mbox.Messages)
 		done := make(chan error, 1)

@@ -25,14 +25,18 @@ func main() {
 
 	}
 
+	InsecureSkipVerify, _ := cfg.Section("email").Key("insecureskipverify").Bool()
+	TLS, _ := cfg.Section("email").Key("ssl").Bool()
+
 	config := structs.Config{
-		Uri:          fmt.Sprintf("%s:%s", cfg.Section("email").Key("host").String(), cfg.Section("email").Key("port").String()),
-		User:         cfg.Section("email").Key("username").String(),
-		Password:     cfg.Section("email").Key("password").String(),
-		RemoteFolder: cfg.Section("email").Key("remote_folder").String(),
-		TLS:          cfg.Section("email").Key("ssl").String(),
-		LocalFolder:  cfg.Section("go-email").Key("local_folder").String(),
-		OutputTypes:  strings.Split(cfg.Section("go-email").Key("output_types").String(), ","),
+		Uri:                fmt.Sprintf("%s:%s", cfg.Section("email").Key("host").String(), cfg.Section("email").Key("port").String()),
+		User:               cfg.Section("email").Key("username").String(),
+		Password:           cfg.Section("email").Key("password").String(),
+		RemoteFolder:       cfg.Section("email").Key("remote_folder").String(),
+		TLS:                TLS,
+		InsecureSkipVerify: InsecureSkipVerify,
+		LocalFolder:        cfg.Section("go-email").Key("local_folder").String(),
+		OutputTypes:        strings.Split(cfg.Section("go-email").Key("output_types").String(), ","),
 	}
 	if config.RemoteFolder == "all" {
 		email.GetAllEmails(config)
