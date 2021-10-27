@@ -15,7 +15,7 @@ import (
 
 func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	log.SetPrefix("go-email: ")
+	log.SetPrefix("github.com/rogafe/go-email: ")
 	log.SetOutput(os.Stderr)
 }
 
