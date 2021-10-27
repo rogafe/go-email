@@ -77,11 +77,23 @@ func GetAllEmails(config structs.Config) {
 				log.Fatal("Server didn't returned message body")
 			}
 			eml := utils.StreamToString(r)
+			_ = eml
+			config.RemoteFolder = folder
 
-			go output.WriteJSON(eml, config)
-			go output.WriteHTML(eml, config)
-			go output.WriteEML(eml, config)
-			go output.WriteAttachement(eml, config)
+			for _, out := range config.OutputTypes {
+				switch out {
+				case "eml":
+					go output.WriteEML(eml, config)
+				case "html":
+					go output.WriteHTML(eml, config)
+				case "json":
+					go output.WriteJSON(eml, config)
+				case "attachement":
+					log.Println(out)
+					go output.WriteAttachement(eml, config)
+
+				}
+			}
 
 		}
 	}

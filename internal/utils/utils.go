@@ -40,3 +40,12 @@ func ChanToSlice(ch interface{}) interface{} {
 		slv = reflect.Append(slv, v)
 	}
 }
+
+func ContainString(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}

@@ -37,11 +37,13 @@ func WriteAttachement(eml string, config structs.Config) {
 			attachmentName, _ := h.Filename()
 			var folderName string
 			if MessageId, err := header.AddressList("Message-Id"); err == nil {
-				a := strings.ReplaceAll(MessageId[0].String(), "<", "")
-				folderName = strings.ReplaceAll(a, ">", "")
+				if len(MessageId) != 0 {
+					a := strings.ReplaceAll(MessageId[0].String(), "<", "")
+					folderName = strings.ReplaceAll(a, ">", "")
+				}
 			}
 
-			folder := fmt.Sprintf("%s/%s", config.LocalFolder, folderName)
+			folder := fmt.Sprintf("%s/%s/%s", config.LocalFolder, config.RemoteFolder, folderName)
 			utils.CreateFolder(folder)
 
 			log.Printf("Got attachment: %v", attachmentName)
