@@ -1,0 +1,7 @@
+*.db
+tmp/*
+cache
+out/
+.env
+*.cfg
+*.txt

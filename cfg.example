@@ -1,0 +1,10 @@
+[go-email]
+local_folder=out
+
+[email]
+host=
+username=
+password=
+remote_folder=
+port=
+ssl=
