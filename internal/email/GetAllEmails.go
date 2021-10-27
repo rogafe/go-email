@@ -58,53 +58,59 @@ func GetAllEmails(config structs.Config) {
 			log.Fatal(err)
 		}
 
-		log.Printf("Downloding %d emails\n", mbox.Messages)
-		seqset := new(imap.SeqSet)
-		seqset.AddRange(1, mbox.Messages)
-		// seqset.AddRange(mbox.Messages, mbox.Messages)
-		// seqset.AddRange(mbox.Messages-5, mbox.Messages)
+		if mbox.Messages != 0 {
 
-		messages := make(chan *imap.Message, mbox.Messages)
-		done := make(chan error, 1)
-		var section imap.BodySectionName
-		items := []imap.FetchItem{section.FetchItem()}
+			log.Printf("Downloding %d emails\n", mbox.Messages)
+			seqset := new(imap.SeqSet)
+			seqset.AddRange(1, mbox.Messages)
 
-		go func() {
-			done <- c.Fetch(seqset, items, messages)
-		}()
+			messages := make(chan *imap.Message, mbox.Messages)
+			done := make(chan error, 1)
+			var section imap.BodySectionName
+			items := []imap.FetchItem{section.FetchItem()}
 
-		log.Println("All the e-mail have been downloaded, converting to EML")
+			go func() {
+				done <- c.Fetch(seqset, items, messages)
+			}()
 
-		sl := utils.ChanToSlice(messages).([]*imap.Message)
+			log.Println("All the e-mail have been downloaded, converting to EML")
 
-		for i, msg := range sl {
+			sl := utils.ChanToSlice(messages).([]*imap.Message)
 
-			log.Printf("Email %d out of %d", i, mbox.Messages)
-			if msg == nil {
-				log.Fatal("Server didn't returned message")
-			}
-			r := msg.GetBody(&section)
-			if r == nil {
-				log.Fatal("Server didn't returned message body")
-			}
-			eml := utils.StreamToString(r)
-			config.RemoteFolder = folder
+			for i, msg := range sl {
 
-			for _, out := range config.OutputTypes {
-				switch out {
-				case "eml":
-					go output.WriteEML(eml, config)
-				case "html":
-					go output.WriteHTML(eml, config)
-				case "json":
-					go output.WriteJSON(eml, config)
-				case "attachement":
-					log.Println(out)
-					go output.WriteAttachement(eml, config)
-
+				log.Printf("Email %d out of %d", i, mbox.Messages)
+				if msg == nil {
+					log.Fatal("Server didn't returned message")
 				}
-			}
+				r := msg.GetBody(&section)
+				if r == nil {
+					log.Fatal("Server didn't returned message body")
+				}
+				eml := utils.StreamToString(r)
+				config.RemoteFolder = folder
 
+				log.Println(config.OutputTypes)
+				for _, out := range config.OutputTypes {
+					log.Println(out)
+					switch out {
+					case "eml":
+						log.Println(out)
+						go output.WriteEML(eml, config)
+					case "html":
+						log.Println(out)
+						go output.WriteHTML(eml, config)
+					case "json":
+						log.Println(out)
+						go output.WriteJSON(eml, config)
+					case "attachement":
+						log.Println(out)
+						go output.WriteAttachement(eml, config)
+
+					}
+				}
+
+			}
 		}
 	}
 

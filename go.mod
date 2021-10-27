@@ -1,6 +1,6 @@
 module github.com/rogafe/go-email
 
-go 1.17
+go 1.13
 
 require (
 	github.com/emersion/go-imap v1.2.0
@@ -9,8 +9,6 @@ require (
 )
 
 require (
-	github.com/emersion/go-sasl v0.0.0-20200509203442-7bfe0ed36a21 // indirect
-	github.com/emersion/go-textwrapper v0.0.0-20200911093747-65d896831594 // indirect
+	github.com/emersion/go-sasl v0.0.0-20211008083017-0b9dcfb154ac // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
-	golang.org/x/text v0.3.7 // indirect
 )
