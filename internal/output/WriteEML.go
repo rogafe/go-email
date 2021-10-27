@@ -2,11 +2,12 @@ package output
 
 import (
 	"fmt"
-	"go-email/internal/structs"
-	"go-email/internal/utils"
 	"io/ioutil"
 	"log"
 	"strings"
+
+	"github.com/rogafe/go-email/internal/structs"
+	"github.com/rogafe/go-email/internal/utils"
 
 	_ "github.com/emersion/go-message/charset"
 	"github.com/emersion/go-message/mail"

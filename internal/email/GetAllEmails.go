@@ -2,10 +2,11 @@ package email
 
 import (
 	"crypto/tls"
-	"go-email/internal/output"
-	"go-email/internal/structs"
-	"go-email/internal/utils"
 	"log"
+
+	"github.com/rogafe/go-email/internal/output"
+	"github.com/rogafe/go-email/internal/structs"
+	"github.com/rogafe/go-email/internal/utils"
 
 	"github.com/emersion/go-imap"
 	"github.com/emersion/go-imap/client"
