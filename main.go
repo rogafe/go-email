@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/rogafe/go-email/internal/email"
-	"github.com/rogafe/go-email/internal/structs"
+	"go-email/internal/email"
+	"go-email/internal/structs"
 
 	_ "github.com/emersion/go-message/charset"
 	"gopkg.in/ini.v1"
@@ -36,8 +36,8 @@ func main() {
 		RemoteFolder:       cfg.Section("email").Key("remote_folder").String(),
 		TLS:                TLS,
 		InsecureSkipVerify: InsecureSkipVerify,
-		LocalFolder:        cfg.Section("github.com/rogafe/go-email").Key("local_folder").String(),
-		OutputTypes:        strings.Split(cfg.Section("github.com/rogafe/go-email").Key("output_types").String(), ","),
+		LocalFolder:        cfg.Section("go-email").Key("local_folder").String(),
+		OutputTypes:        strings.Split(cfg.Section("go-email").Key("output_types").String(), ","),
 	}
 	if config.RemoteFolder == "all" {
 		email.GetAllEmails(config)

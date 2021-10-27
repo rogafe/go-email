@@ -7,8 +7,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/rogafe/go-email/internal/structs"
-	"github.com/rogafe/go-email/internal/utils"
+	"go-email/internal/structs"
+	"go-email/internal/utils"
 
 	"github.com/emersion/go-message/mail"
 )

@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/rogafe/go-email/internal/structs"
-	"github.com/rogafe/go-email/internal/utils"
+	"go-email/internal/structs"
+	"go-email/internal/utils"
 
 	_ "github.com/emersion/go-message/charset"
 	"github.com/emersion/go-message/mail"
