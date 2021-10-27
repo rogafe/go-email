@@ -5,16 +5,20 @@ I was inspired by [polo2ro imapbox](https://github.com/polo2ro/imapbox) to creat
 
 ## Getting started
 
+## How to install
 
-How to install 
+1. Using go install
 
-Using go install
+    ```bash
+    # for latest
+    go install github.com/rogafe/go-email@latest
 
-```bash
-# for latest
-go install github.com/rogafe/go-email@latest
+    #for latest working release :)
+    go install github.com/rogafe/go-email@v0.1.2
 
-#for latest working release :)
-go install github.com/rogafe/go-email@v0.1.2
+    ```
 
-```
+
+2. Using the automatic release 
+
+   *Only for linux for now* checkout the [releases](https://github.com/rogafe/go-email/releases) page.
