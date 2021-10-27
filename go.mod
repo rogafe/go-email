@@ -1,4 +1,4 @@
-module go-email
+module github.com/rogafe/go-email
 
 go 1.17
 
