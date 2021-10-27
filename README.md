@@ -18,7 +18,6 @@ I was inspired by [polo2ro imapbox](https://github.com/polo2ro/imapbox) to creat
 
     ```
 
-
-2. Using the automatic release 
+2. Using the automatic release
 
    *Only for linux for now* checkout the [releases](https://github.com/rogafe/go-email/releases) page.
