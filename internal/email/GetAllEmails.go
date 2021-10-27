@@ -87,7 +87,6 @@ func GetAllEmails(config structs.Config) {
 				log.Fatal("Server didn't returned message body")
 			}
 			eml := utils.StreamToString(r)
-			_ = eml
 			config.RemoteFolder = folder
 
 			for _, out := range config.OutputTypes {

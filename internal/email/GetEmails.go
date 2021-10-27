@@ -12,16 +12,8 @@ import (
 )
 
 func GetEmails(config structs.Config) {
-	// log.Println(config.User, config.Password, config.Uri)
 	var c *client.Client
 	var err error
-
-	// c, err := client.DialTLS(config.Uri, nil)
-	// if config.TLS == "true" {
-	// 	c, err := client.DialTLS(config.Uri, nil)
-	// } else {
-	// 	c, err := client.Dial(config.Uri)
-	// }
 
 	switch {
 	case config.TLS && config.InsecureSkipVerify:
@@ -83,11 +75,20 @@ func GetEmails(config structs.Config) {
 		}
 		eml := utils.StreamToString(r)
 
-		go output.WriteJSON(eml, config)
-		go output.WriteHTML(eml, config)
-		go output.WriteEML(eml, config)
-		go output.WriteAttachement(eml, config)
+		for _, out := range config.OutputTypes {
+			switch out {
+			case "eml":
+				go output.WriteEML(eml, config)
+			case "html":
+				go output.WriteHTML(eml, config)
+			case "json":
+				go output.WriteJSON(eml, config)
+			case "attachement":
+				log.Println(out)
+				go output.WriteAttachement(eml, config)
 
+			}
+		}
 	}
 
 }
