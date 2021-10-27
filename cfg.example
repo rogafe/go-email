@@ -1,5 +1,6 @@
 [go-email]
 local_folder=out
+output_types=json,eml,html
 
 [email]
 host=

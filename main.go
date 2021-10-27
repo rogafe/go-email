@@ -24,14 +24,6 @@ func main() {
 
 	}
 
-	// localFolder := cfg.Section("go-email").Key("local_folder")
-
-	// log.Println(config)
-
-	// CreateFolder(localFolder.String())
-
-	// CreateFolder(fmt.Sprintf("%s/testing", localFolder))
-
 	config := structs.Config{
 		Uri:          fmt.Sprintf("%s:%s", cfg.Section("email").Key("host").String(), cfg.Section("email").Key("port").String()),
 		User:         cfg.Section("email").Key("username").String(),
@@ -40,5 +32,9 @@ func main() {
 		TLS:          cfg.Section("email").Key("ssl").String(),
 		LocalFolder:  cfg.Section("go-email").Key("local_folder").String(),
 	}
-	email.GetEmails(config)
+	if config.RemoteFolder == "all" {
+		email.GetAllEmails(config)
+	} else {
+		email.GetEmails(config)
+	}
 }
