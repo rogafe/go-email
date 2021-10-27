@@ -1,6 +1,7 @@
 package email
 
 import (
+	"crypto/tls"
 	"go-email/internal/output"
 	"go-email/internal/structs"
 	"go-email/internal/utils"
@@ -12,13 +13,24 @@ import (
 
 func GetEmails(config structs.Config) {
 	// log.Println(config.User, config.Password, config.Uri)
+	var c *client.Client
+	var err error
 
-	c, err := client.DialTLS(config.Uri, nil)
+	// c, err := client.DialTLS(config.Uri, nil)
 	// if config.TLS == "true" {
 	// 	c, err := client.DialTLS(config.Uri, nil)
 	// } else {
 	// 	c, err := client.Dial(config.Uri)
 	// }
+
+	switch {
+	case config.TLS && config.InsecureSkipVerify:
+		c, err = client.DialTLS(config.Uri, &tls.Config{InsecureSkipVerify: true})
+	case config.TLS && !config.InsecureSkipVerify:
+		c, err = client.DialTLS(config.Uri, nil)
+	case !config.TLS:
+		c, err = client.Dial(config.Uri)
+	}
 
 	if err != nil {
 		log.Fatal(err)

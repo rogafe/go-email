@@ -9,3 +9,4 @@ password=
 remote_folder=
 port=
 ssl=
+insecureskipverify=
