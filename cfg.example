@@ -6,6 +6,7 @@ output_types=json,eml,html
 host=
 username=
 password=
+oauth2=gmail=
 remote_folder=
 port=
 ssl=

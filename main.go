@@ -6,16 +6,15 @@ import (
 	"os"
 	"strings"
 
+	_ "github.com/emersion/go-message/charset"
 	"github.com/rogafe/go-email/internal/email"
 	"github.com/rogafe/go-email/internal/structs"
-
-	_ "github.com/emersion/go-message/charset"
 	"gopkg.in/ini.v1"
 )
 
 func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	log.SetPrefix("github.com/rogafe/go-email: ")
+	log.SetPrefix("go-email: ")
 	log.SetOutput(os.Stderr)
 }
 
@@ -33,6 +32,7 @@ func main() {
 		Uri:                fmt.Sprintf("%s:%s", cfg.Section("email").Key("host").String(), cfg.Section("email").Key("port").String()),
 		User:               cfg.Section("email").Key("username").String(),
 		Password:           cfg.Section("email").Key("password").String(),
+		Oauth2:             cfg.Section("email").Key("oauth2").String(),
 		RemoteFolder:       cfg.Section("email").Key("remote_folder").String(),
 		TLS:                TLS,
 		InsecureSkipVerify: InsecureSkipVerify,

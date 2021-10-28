@@ -4,12 +4,14 @@ import (
 	"crypto/tls"
 	"log"
 
+	"github.com/rogafe/go-email/internal/auth"
 	"github.com/rogafe/go-email/internal/output"
 	"github.com/rogafe/go-email/internal/structs"
 	"github.com/rogafe/go-email/internal/utils"
 
 	"github.com/emersion/go-imap"
 	"github.com/emersion/go-imap/client"
+	"github.com/emersion/go-sasl"
 )
 
 func GetAllEmails(config structs.Config) {
@@ -34,10 +36,24 @@ func GetAllEmails(config structs.Config) {
 	defer c.Logout()
 
 	// Login
-	if err := c.Login(config.User, config.Password); err != nil {
-		log.Fatal(err)
+	switch config.Oauth2 {
+	case "gmail":
+		token := auth.GoogleOauth()
+
+		err = c.Authenticate(sasl.NewOAuthBearerClient(&sasl.OAuthBearerOptions{
+			Username: config.User,
+			Token:    token.AccessToken,
+		}))
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println("Logged in")
+	default:
+		if err := c.Login(config.User, config.Password); err != nil {
+			log.Fatal(err)
+		}
+		log.Println("Logged in")
 	}
-	log.Println("Logged in")
 
 	mailboxes := make(chan *imap.MailboxInfo, 10)
 	done := make(chan error, 1)
