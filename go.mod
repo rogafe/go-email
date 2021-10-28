@@ -5,6 +5,8 @@ go 1.13
 require (
 	github.com/emersion/go-imap v1.2.0
 	github.com/emersion/go-message v0.15.0
+	github.com/emersion/go-sasl v0.0.0-20200509203442-7bfe0ed36a21
 	github.com/stretchr/testify v1.7.0 // indirect
+	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1
 	gopkg.in/ini.v1 v1.63.2
 )
