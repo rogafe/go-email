@@ -84,7 +84,9 @@ func WriteJSON(eml string, config structs.Config) {
 		}
 	}
 
-	folder := fmt.Sprintf("%s/%s/%s", config.LocalFolder, config.RemoteFolder, filename)
+	// log.Println()
+
+	folder := fmt.Sprintf("%s/%s/%s/%s", config.LocalFolder, config.RemoteFolder, config.User, filename)
 
 	utils.CreateFolder(folder)
 	err = ioutil.WriteFile(fmt.Sprintf("%s/message.json", folder), json, 0644)

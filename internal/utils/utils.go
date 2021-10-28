@@ -2,10 +2,15 @@ package utils
 
 import (
 	"bytes"
+	"encoding/json"
+	"errors"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"reflect"
+
+	"golang.org/x/oauth2"
 )
 
 func StreamToByte(stream io.Reader) []byte {
@@ -48,4 +53,27 @@ func ContainString(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+func FileExists(name string) (bool, error) {
+	_, err := os.Stat(name)
+	if err == nil {
+		return true, nil
+	}
+	if errors.Is(err, os.ErrNotExist) {
+		return false, nil
+	}
+	return false, err
+}
+
+func WriteToken(token *oauth2.Token) {
+	tokenJson, err := json.MarshalIndent(token, "", "\t")
+	if err != nil {
+		log.Println(err)
+	}
+
+	err = ioutil.WriteFile("./token.json", tokenJson, 0777)
+	if err != nil {
+		log.Println(err)
+	}
 }

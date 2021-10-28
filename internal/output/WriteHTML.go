@@ -54,7 +54,7 @@ func WriteHTML(eml string, config structs.Config) {
 		}
 	}
 
-	folder := fmt.Sprintf("%s/%s/%s", config.LocalFolder, config.RemoteFolder, filename)
+	folder := fmt.Sprintf("%s/%s/%s/%s", config.LocalFolder, config.RemoteFolder, config.User, filename)
 
 	utils.CreateFolder(folder)
 	err = ioutil.WriteFile(fmt.Sprintf("%s/message.html", folder), []byte(Body), 0644)

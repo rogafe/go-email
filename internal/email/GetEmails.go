@@ -38,7 +38,7 @@ func GetEmails(config structs.Config) {
 	//LOGIN
 	switch config.Oauth2 {
 	case "gmail":
-		token := auth.GoogleOauth()
+		token := auth.GoogleOauth(config)
 
 		err = c.Authenticate(sasl.NewOAuthBearerClient(&sasl.OAuthBearerOptions{
 			Username: config.User,
