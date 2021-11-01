@@ -39,7 +39,7 @@ jobs:
         extra_files: config.env.example
   release-mac-m1:
     name: release mac/arm
-    runs-on: mac-m1
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: wangyoucao577/go-release-action@v1.20
