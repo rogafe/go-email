@@ -37,7 +37,7 @@ jobs:
         goos: darwin
         goarch: amd64
         extra_files: config.env.example
-    release-mac-m1:
+  release-mac-m1:
     name: release mac/amd64
     runs-on: mac-m1
     steps:
