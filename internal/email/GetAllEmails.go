@@ -91,9 +91,9 @@ func GetAllEmails(config structs.Config) {
 
 			log.Println("All the e-mail have been downloaded, converting to EML")
 
-			sl := utils.ChanToSlice(messages).([]*imap.Message)
-
-			for i, msg := range sl {
+			// sl := utils.ChanToSlice(messages).([]*imap.Message)
+			var i int
+			for msg := range messages {
 
 				log.Printf("Email %d out of %d", i, mbox.Messages)
 				if msg == nil {
@@ -125,6 +125,7 @@ func GetAllEmails(config structs.Config) {
 
 					}
 				}
+				i++
 
 			}
 		}
