@@ -44,7 +44,7 @@ func WriteAttachement(eml string, config structs.Config) {
 				}
 			}
 
-			folder := fmt.Sprintf("%s/%s/%s/%s", config.LocalFolder, config.RemoteFolder, config.User, folderName)
+			folder := fmt.Sprintf("%s/%s/%s/%s", config.LocalFolder, config.User, config.RemoteFolder, folderName)
 
 			utils.CreateFolder(folder)
 
