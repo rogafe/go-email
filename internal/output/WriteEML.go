@@ -28,7 +28,7 @@ func WriteEML(eml string, config structs.Config) {
 		}
 	}
 
-	folder := fmt.Sprintf("%s/%s/%s/%s", config.LocalFolder, config.RemoteFolder, config.User, filename)
+	folder := fmt.Sprintf("%s/%s/%s/%s", config.LocalFolder, config.User, config.RemoteFolder, filename)
 
 	utils.CreateFolder(folder)
 	err = ioutil.WriteFile(fmt.Sprintf("%s/message.eml", folder), []byte(eml), 0644)
