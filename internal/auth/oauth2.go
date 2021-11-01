@@ -48,8 +48,8 @@ func WriteToken(token *oauth2.Token, config structs.Config) {
 		log.Println(err)
 	}
 
-	utils.CreateFolder(fmt.Sprintf("./%s/%s/%s", config.LocalFolder, config.RemoteFolder, config.User))
-	err = ioutil.WriteFile(fmt.Sprintf("./%s/%s/%s/token.json", config.LocalFolder, config.RemoteFolder, config.User), tokenJson, 0777)
+	utils.CreateFolder(fmt.Sprintf("./%s/%s", config.LocalFolder, config.User))
+	err = ioutil.WriteFile(fmt.Sprintf("./%s/%s/token.json", config.LocalFolder, config.User), tokenJson, 0777)
 	if err != nil {
 		log.Println(err)
 	}
@@ -57,7 +57,7 @@ func WriteToken(token *oauth2.Token, config structs.Config) {
 
 func GoogleOauth(config structs.Config) (token *oauth2.Token) {
 
-	exist, err := utils.FileExists(fmt.Sprintf("./%s/%s/%s/token.json", config.LocalFolder, config.RemoteFolder, config.User))
+	exist, err := utils.FileExists(fmt.Sprintf("./%s/%s/token.json", config.LocalFolder, config.User))
 	if err != nil {
 		log.Println(err)
 	}
@@ -74,7 +74,7 @@ func GoogleOauth(config structs.Config) (token *oauth2.Token) {
 		token = requestToken(userInput, googleOauthConfig)
 		WriteToken(token, config)
 	} else {
-		token = LoadToken(fmt.Sprintf("./%s/%s/%s/token.json", config.LocalFolder, config.RemoteFolder, config.User))
+		token = LoadToken(fmt.Sprintf("./%s/%s/token.json", config.LocalFolder, config.User))
 	}
 
 	return token
