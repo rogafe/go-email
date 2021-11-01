@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 
+	"github.com/rogafe/go-email/internal/structs"
 	"github.com/rogafe/go-email/internal/utils"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -27,20 +28,54 @@ func LoadConfiguration(file string) (config *oauth2.Config) {
 	}
 
 	return config
-
 }
 
-func GoogleOauth() (token *oauth2.Token) {
-	googleOauthConfig := LoadConfiguration("secret.json")
+func LoadToken(file string) (token *oauth2.Token) {
+	b, err := ioutil.ReadFile(file)
+	if err != nil {
+		log.Fatalf("Unable to read client secret file: %v", err)
+	}
+	err = json.Unmarshal(b, &token)
+	if err != nil {
+		log.Println(err)
+	}
+	return token
+}
 
-	oauthStateString := utils.GeneratePassword(10, 60)
+func WriteToken(token *oauth2.Token, config structs.Config) {
+	tokenJson, err := json.MarshalIndent(token, "", "\t")
+	if err != nil {
+		log.Println(err)
+	}
 
-	fmt.Printf("Please go to this address to get the token\n%s\n", googleOauthConfig.AuthCodeURL(oauthStateString))
-	reader := bufio.NewReader(os.Stdin)
+	utils.CreateFolder(fmt.Sprintf("./%s/%s/%s", config.LocalFolder, config.RemoteFolder, config.User))
+	err = ioutil.WriteFile(fmt.Sprintf("./%s/%s/%s/token.json", config.LocalFolder, config.RemoteFolder, config.User), tokenJson, 0777)
+	if err != nil {
+		log.Println(err)
+	}
+}
 
-	fmt.Print("copy the token here >>> ")
-	userInput, _ := reader.ReadString('\n')
-	token = requestToken(userInput, googleOauthConfig)
+func GoogleOauth(config structs.Config) (token *oauth2.Token) {
+
+	exist, err := utils.FileExists(fmt.Sprintf("./%s/%s/%s/token.json", config.LocalFolder, config.RemoteFolder, config.User))
+	if err != nil {
+		log.Println(err)
+	}
+	if !exist {
+		googleOauthConfig := LoadConfiguration("secret.json")
+
+		oauthStateString := utils.GeneratePassword(10, 60)
+
+		fmt.Printf("Please go to this address to get the token\n%s\n", googleOauthConfig.AuthCodeURL(oauthStateString))
+		reader := bufio.NewReader(os.Stdin)
+
+		fmt.Print("copy the token here >>> ")
+		userInput, _ := reader.ReadString('\n')
+		token = requestToken(userInput, googleOauthConfig)
+		WriteToken(token, config)
+	} else {
+		token = LoadToken(fmt.Sprintf("./%s/%s/%s/token.json", config.LocalFolder, config.RemoteFolder, config.User))
+	}
 
 	return token
 
@@ -70,8 +105,8 @@ func requestToken(userInput string, googleOauthConfig *oauth2.Config) (token *oa
 
 	err = json.Unmarshal(body, &token)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
-
+	log.Println(token)
 	return token
 }
