@@ -14,7 +14,7 @@ I was inspired by [polo2ro imapbox](https://github.com/polo2ro/imapbox) to creat
     go install github.com/rogafe/go-email@latest
 
     #for latest working release :)
-    go install github.com/rogafe/go-email@v0.1.2
+    go install github.com/rogafe/go-email@v[see releases]
 
     ```
 
