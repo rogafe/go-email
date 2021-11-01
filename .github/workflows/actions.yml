@@ -38,7 +38,7 @@ jobs:
         goarch: amd64
         extra_files: config.env.example
   release-mac-m1:
-    name: release mac/amd64
+    name: release mac/arm
     runs-on: mac-m1
     steps:
     - uses: actions/checkout@v2
