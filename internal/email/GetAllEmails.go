@@ -3,6 +3,7 @@ package email
 import (
 	"crypto/tls"
 	"log"
+	"strings"
 
 	"github.com/rogafe/go-email/internal/auth"
 	"github.com/rogafe/go-email/internal/output"
@@ -67,9 +68,11 @@ func GetAllEmails(account structs.Account) {
 	}
 
 	for _, folder := range folders {
+		a := strings.ReplaceAll(folder, "[", "")
+		folderName := strings.ReplaceAll(a, "]", "")
 
 		// Select INBOX
-		mbox, err := c.Select(folder, false)
+		mbox, err := c.Select(folderName, false)
 		if err != nil {
 			log.Fatal(err)
 		}
