@@ -13,7 +13,7 @@ import (
 	"github.com/emersion/go-message/mail"
 )
 
-func WriteAttachement(eml string, config structs.Config) {
+func WriteAttachement(eml string, account structs.Account) {
 	mr, err := mail.CreateReader(strings.NewReader(eml))
 	if err != nil {
 		log.Println(err)
@@ -44,7 +44,7 @@ func WriteAttachement(eml string, config structs.Config) {
 				}
 			}
 
-			folder := fmt.Sprintf("%s/%s/%s/%s", config.LocalFolder, config.User, config.RemoteFolder, folderName)
+			folder := fmt.Sprintf("%s/%s/%s/%s", account.LocalFolder, account.User, account.RemoteFolder, folderName)
 
 			utils.CreateFolder(folder)
 
