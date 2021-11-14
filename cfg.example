@@ -1,12 +1,13 @@
 [go-email]
 local_folder=out
 output_types=json,eml,html
+wkhtmltopdf=
 
 [email]
 host=
 username=
 password=
-oauth2=gmail=
+oauth2=gmail
 remote_folder=
 port=
 ssl=

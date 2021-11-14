@@ -14,17 +14,17 @@ import (
 	"github.com/emersion/go-sasl"
 )
 
-func GetAllEmails(config structs.Config) {
+func GetAllEmails(account structs.Account) {
 	var c *client.Client
 	var err error
 
 	switch {
-	case config.TLS && config.InsecureSkipVerify:
-		c, err = client.DialTLS(config.Uri, &tls.Config{InsecureSkipVerify: true})
-	case config.TLS && !config.InsecureSkipVerify:
-		c, err = client.DialTLS(config.Uri, nil)
-	case !config.TLS:
-		c, err = client.Dial(config.Uri)
+	case account.TLS && account.InsecureSkipVerify:
+		c, err = client.DialTLS(account.Uri, &tls.Config{InsecureSkipVerify: true})
+	case account.TLS && !account.InsecureSkipVerify:
+		c, err = client.DialTLS(account.Uri, nil)
+	case !account.TLS:
+		c, err = client.Dial(account.Uri)
 	}
 
 	if err != nil {
@@ -36,12 +36,12 @@ func GetAllEmails(config structs.Config) {
 	defer c.Logout()
 
 	// Login
-	switch config.Oauth2 {
+	switch account.Oauth2 {
 	case "gmail":
-		token := auth.GoogleOauth(config)
+		token := auth.GoogleOauth(account)
 
 		err = c.Authenticate(sasl.NewOAuthBearerClient(&sasl.OAuthBearerOptions{
-			Username: config.User,
+			Username: account.User,
 			Token:    token.AccessToken,
 		}))
 		if err != nil {
@@ -49,7 +49,7 @@ func GetAllEmails(config structs.Config) {
 		}
 		log.Println("Logged in")
 	default:
-		if err := c.Login(config.User, config.Password); err != nil {
+		if err := c.Login(account.User, account.Password); err != nil {
 			log.Fatal(err)
 		}
 		log.Println("Logged in")
@@ -104,24 +104,24 @@ func GetAllEmails(config structs.Config) {
 					log.Fatal("Server didn't returned message body")
 				}
 				eml := utils.StreamToString(r)
-				config.RemoteFolder = folder
+				account.RemoteFolder = folder
 
-				log.Println(config.OutputTypes)
-				for _, out := range config.OutputTypes {
+				log.Println(account.OutputTypes)
+				for _, out := range account.OutputTypes {
 					log.Println(out)
 					switch out {
 					case "eml":
 						log.Println(out)
-						go output.WriteEML(eml, config)
+						go output.WriteEML(eml, account)
 					case "html":
 						log.Println(out)
-						go output.WriteHTML(eml, config)
+						go output.WriteHTML(eml, account)
 					case "json":
 						log.Println(out)
-						go output.WriteJSON(eml, config)
+						go output.WriteJSON(eml, account)
 					case "attachement":
 						log.Println(out)
-						go output.WriteAttachement(eml, config)
+						go output.WriteAttachement(eml, account)
 
 					}
 				}

@@ -16,18 +16,18 @@ import (
 	"golang.org/x/oauth2/google"
 )
 
-func LoadConfiguration(file string) (config *oauth2.Config) {
+func LoadConfiguration(file string) (account *oauth2.Config) {
 	b, err := ioutil.ReadFile(file)
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)
 	}
 
-	config, err = google.ConfigFromJSON(b, "https://mail.google.com")
+	account, err = google.ConfigFromJSON(b, "https://mail.google.com")
 	if err != nil {
-		log.Fatalf("Unable to parse client secret file to config: %v", err)
+		log.Fatalf("Unable to parse client secret file to account: %v", err)
 	}
 
-	return config
+	return account
 }
 
 func LoadToken(file string) (token *oauth2.Token) {
@@ -42,22 +42,22 @@ func LoadToken(file string) (token *oauth2.Token) {
 	return token
 }
 
-func WriteToken(token *oauth2.Token, config structs.Config) {
+func WriteToken(token *oauth2.Token, account structs.Account) {
 	tokenJson, err := json.MarshalIndent(token, "", "\t")
 	if err != nil {
 		log.Println(err)
 	}
 
-	utils.CreateFolder(fmt.Sprintf("./%s/%s", config.LocalFolder, config.User))
-	err = ioutil.WriteFile(fmt.Sprintf("./%s/%s/token.json", config.LocalFolder, config.User), tokenJson, 0777)
+	utils.CreateFolder(fmt.Sprintf("./%s/%s", account.LocalFolder, account.User))
+	err = ioutil.WriteFile(fmt.Sprintf("./%s/%s/token.json", account.LocalFolder, account.User), tokenJson, 0777)
 	if err != nil {
 		log.Println(err)
 	}
 }
 
-func GoogleOauth(config structs.Config) (token *oauth2.Token) {
+func GoogleOauth(account structs.Account) (token *oauth2.Token) {
 
-	exist, err := utils.FileExists(fmt.Sprintf("./%s/%s/token.json", config.LocalFolder, config.User))
+	exist, err := utils.FileExists(fmt.Sprintf("./%s/%s/token.json", account.LocalFolder, account.User))
 	if err != nil {
 		log.Println(err)
 	}
@@ -72,9 +72,9 @@ func GoogleOauth(config structs.Config) (token *oauth2.Token) {
 		fmt.Print("copy the token here >>> ")
 		userInput, _ := reader.ReadString('\n')
 		token = requestToken(userInput, googleOauthConfig)
-		WriteToken(token, config)
+		WriteToken(token, account)
 	} else {
-		token = LoadToken(fmt.Sprintf("./%s/%s/token.json", config.LocalFolder, config.User))
+		token = LoadToken(fmt.Sprintf("./%s/%s/token.json", account.LocalFolder, account.User))
 	}
 
 	return token

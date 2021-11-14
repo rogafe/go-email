@@ -14,7 +14,7 @@ import (
 	"github.com/emersion/go-message/mail"
 )
 
-func WriteJSON(eml string, config structs.Config) {
+func WriteJSON(eml string, account structs.Account) {
 	log.Println("json")
 
 	mr, err := mail.CreateReader(strings.NewReader(eml))
@@ -86,7 +86,7 @@ func WriteJSON(eml string, config structs.Config) {
 
 	// log.Println()
 
-	folder := fmt.Sprintf("%s/%s/%s/%s", config.LocalFolder, config.User, config.RemoteFolder, filename)
+	folder := fmt.Sprintf("%s/%s/%s/%s", account.LocalFolder, account.User, account.RemoteFolder, filename)
 
 	utils.CreateFolder(folder)
 	err = ioutil.WriteFile(fmt.Sprintf("%s/message.json", folder), json, 0644)
