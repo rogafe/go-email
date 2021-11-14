@@ -24,6 +24,6 @@ I was inspired by [polo2ro imapbox](https://github.com/polo2ro/imapbox) to creat
 
 ## How to use
 
-### Using gmail 
+### Using gmail
 
-See the wiki https://github.com/rogafe/go-email/wiki/Login-with-OAuth#how-to-with-gmail
+See the [wiki](https://github.com/rogafe/go-email/wiki/Login-with-OAuth#how-to-with-gmail)
