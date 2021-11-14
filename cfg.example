@@ -1,13 +1,23 @@
 [go-email]
 local_folder=out
-output_types=json,eml,html
-wkhtmltopdf=
+output_types=json,html,eml
+wkhtmltopdf=/usr/bin/wkhtmltopdf
 
-[email]
+[account1]
+oauth2=gmail
+host=imap.gmail.com
+username=example@gmail.com
+password=
+remote_folder=all
+port=993
+ssl=true
+insecureskipverify=false
+
+[account2]
+oauth2=
 host=
 username=
 password=
-oauth2=gmail
 remote_folder=
 port=
 ssl=
