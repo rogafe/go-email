@@ -3,7 +3,6 @@ package email
 import (
 	"crypto/tls"
 	"log"
-	"strings"
 
 	"github.com/rogafe/go-email/internal/auth"
 	"github.com/rogafe/go-email/internal/output"
@@ -55,6 +54,13 @@ func GetAllEmails(account structs.Account) {
 		}
 		log.Println("Logged in")
 	}
+	mailbox := ListMailbox(c)
+
+	GetMessages(c, mailbox, account)
+
+}
+
+func ListMailbox(c *client.Client) (box []*imap.MailboxInfo) {
 
 	mailboxes := make(chan *imap.MailboxInfo, 10)
 	done := make(chan error, 1)
@@ -62,74 +68,82 @@ func GetAllEmails(account structs.Account) {
 		done <- c.List("", "*", mailboxes)
 	}()
 
-	var folders []string
+	// log.Println("Mailboxes:")
 	for m := range mailboxes {
-		folders = append(folders, m.Name)
+		box = append(box, m)
 	}
 
-	for _, folder := range folders {
-		a := strings.ReplaceAll(folder, "[", "")
-		folderName := strings.ReplaceAll(a, "]", "")
+	if err := <-done; err != nil {
+		log.Fatal(err)
+	}
+	return box
+}
 
+func GetMessages(c *client.Client, box []*imap.MailboxInfo, account structs.Account) {
+
+	for _, m := range box {
 		// Select INBOX
-		mbox, err := c.Select(folderName, false)
+		mbox, err := c.Select(m.Name, false)
 		if err != nil {
-			log.Fatal(err)
-		}
+			log.Println(err)
+		} else {
 
-		if mbox.Messages != 0 {
+			log.Printf("Flags for %s: %s\n", m.Name, mbox.Flags)
 
-			log.Printf("Downloding %d emails\n", mbox.Messages)
-			seqset := new(imap.SeqSet)
-			seqset.AddRange(1, mbox.Messages)
+			if mbox.Messages != 0 {
 
-			messages := make(chan *imap.Message, mbox.Messages)
-			done := make(chan error, 1)
-			var section imap.BodySectionName
-			items := []imap.FetchItem{section.FetchItem()}
+				log.Printf("Downloding %d emails\n", mbox.Messages)
+				seqset := new(imap.SeqSet)
+				seqset.AddRange(1, mbox.Messages)
 
-			go func() {
-				done <- c.Fetch(seqset, items, messages)
-			}()
+				messages := make(chan *imap.Message, mbox.Messages)
+				done := make(chan error, 1)
+				var section imap.BodySectionName
+				items := []imap.FetchItem{section.FetchItem()}
 
-			log.Println("All the e-mail have been downloaded, converting to EML")
+				go func() {
+					done <- c.Fetch(seqset, items, messages)
+				}()
 
-			// sl := utils.ChanToSlice(messages).([]*imap.Message)
-			var i int
-			for msg := range messages {
+				log.Println("All the e-mail have been downloaded, converting to EML")
 
-				log.Printf("Email %d out of %d", i, mbox.Messages)
-				if msg == nil {
-					log.Fatal("Server didn't returned message")
-				}
-				r := msg.GetBody(&section)
-				if r == nil {
-					log.Fatal("Server didn't returned message body")
-				}
-				eml := utils.StreamToString(r)
-				account.RemoteFolder = folder
+				// sl := utils.ChanToSlice(messages).([]*imap.Message)
+				var i int
+				for msg := range messages {
 
-				log.Println(account.OutputTypes)
-				for _, out := range account.OutputTypes {
-					log.Println(out)
-					switch out {
-					case "eml":
-						log.Println(out)
-						go output.WriteEML(eml, account)
-					case "html":
-						log.Println(out)
-						go output.WriteHTML(eml, account)
-					case "json":
-						log.Println(out)
-						go output.WriteJSON(eml, account)
-					case "attachement":
-						log.Println(out)
-						go output.WriteAttachement(eml, account)
-
+					log.Printf("Email %d out of %d", i, mbox.Messages)
+					if msg == nil {
+						log.Fatal("Server didn't returned message")
 					}
-				}
-				i++
+					r := msg.GetBody(&section)
+					if r == nil {
+						log.Fatal("Server didn't returned message body")
+					}
+					eml := utils.StreamToString(r)
+					account.RemoteFolder = m.Name
 
+					log.Println(account.OutputTypes)
+					for _, out := range account.OutputTypes {
+						log.Println(out)
+						switch out {
+						case "eml":
+							log.Println(out)
+							go output.WriteEML(eml, account)
+						case "html":
+							log.Println(out)
+							go output.WriteHTML(eml, account)
+						case "json":
+							log.Println(out)
+							go output.WriteJSON(eml, account)
+						case "attachement":
+							log.Println(out)
+							go output.WriteAttachement(eml, account)
+
+						}
+					}
+					i++
+
+				}
 			}
 		}
 	}
