@@ -26,10 +26,11 @@ func main() {
 	}
 
 	// var config structs.Config
-
+	verbose, _ := cfg.Section("go-email").Key("verbose").Bool()
 	config := structs.Config{
 		LocalFolder: cfg.Section("go-email").Key("local_folder").String(),
 		Wkhtmltopdf: cfg.Section("go-email").Key("wkhtmltopdf").String(),
+		Verbose:     verbose,
 	}
 
 	for _, section := range cfg.SectionStrings() {

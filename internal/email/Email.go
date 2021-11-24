@@ -10,9 +10,9 @@ func Get(config structs.Config) {
 	for _, account := range config.Accounts {
 		log.Println(account.Name)
 		if account.RemoteFolder == "all" {
-			GetAllEmails(account)
+			GetAllEmails(account, config.Verbose)
 		} else {
-			GetEmails(account)
+			GetEmails(account, config.Verbose)
 		}
 	}
 }

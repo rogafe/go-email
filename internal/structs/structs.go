@@ -5,6 +5,7 @@ type Config struct {
 	LocalFolder string    `json:"local_folder"`
 	Wkhtmltopdf string    `json:"wkhtmltopdf"`
 	Accounts    []Account `json:"accounts"`
+	Verbose     bool      `json:"verbose"`
 }
 
 type Account struct {

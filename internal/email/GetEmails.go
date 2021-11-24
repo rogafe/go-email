@@ -14,7 +14,7 @@ import (
 	"github.com/emersion/go-sasl"
 )
 
-func GetEmails(account structs.Account) {
+func GetEmails(account structs.Account, verbose bool) {
 	var c *client.Client
 	var err error
 
@@ -64,9 +64,6 @@ func GetEmails(account structs.Account) {
 	log.Printf("Downloding %d emails\n", mbox.Messages)
 	seqset := new(imap.SeqSet)
 	seqset.AddRange(1, mbox.Messages)
-	// seqset.AddRange(mbox.Messages, mbox.Messages)
-	// seqset.AddRange(mbox.Messages-5, mbox.Messages)
-	// var Messages []*imap.Message
 	messages := make(chan *imap.Message, mbox.Messages)
 	done := make(chan error, 1)
 	var section imap.BodySectionName

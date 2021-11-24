@@ -14,7 +14,7 @@ import (
 	"github.com/emersion/go-sasl"
 )
 
-func GetAllEmails(account structs.Account) {
+func GetAllEmails(account structs.Account, verbose bool) {
 	var c *client.Client
 	var err error
 
