@@ -123,24 +123,9 @@ func GetMessages(c *client.Client, box []*imap.MailboxInfo, account structs.Acco
 					account.RemoteFolder = m.Name
 
 					log.Println(account.OutputTypes)
-					for _, out := range account.OutputTypes {
-						log.Println(out)
-						switch out {
-						case "eml":
-							log.Println(out)
-							go output.WriteEML(eml, account)
-						case "html":
-							log.Println(out)
-							go output.WriteHTML(eml, account)
-						case "json":
-							log.Println(out)
-							go output.WriteJSON(eml, account)
-						case "attachement":
-							log.Println(out)
-							go output.WriteAttachement(eml, account)
 
-						}
-					}
+					output.WriteOutput(eml, account)
+
 					i++
 
 				}

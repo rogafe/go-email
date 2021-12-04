@@ -15,7 +15,7 @@ func WriteOutput(eml string, account structs.Account) {
 			go WriteEML(eml, account)
 		case "html":
 			log.Println(out)
-			go WriteHTML(eml, account)
+			go WriteHTML(eml, account, "file")
 		case "json":
 			log.Println(out)
 			go WriteJSON(eml, account)
@@ -26,6 +26,9 @@ func WriteOutput(eml string, account structs.Account) {
 		case "image":
 			log.Println(out)
 			go WriteImage(eml, account)
+		case "pdf":
+			log.Println(out)
+			go WritePDF(eml, account)
 		}
 	}
 }

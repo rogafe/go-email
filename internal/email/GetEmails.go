@@ -92,20 +92,8 @@ func GetEmails(account structs.Account) {
 		}
 		eml := utils.StreamToString(r)
 
-		for _, out := range account.OutputTypes {
-			switch out {
-			case "eml":
-				go output.WriteEML(eml, account)
-			case "html":
-				go output.WriteHTML(eml, account)
-			case "json":
-				go output.WriteJSON(eml, account)
-			case "attachement":
-				log.Println(out)
-				go output.WriteAttachement(eml, account)
+		output.WriteOutput(eml, account)
 
-			}
-		}
 		i++
 	}
 
