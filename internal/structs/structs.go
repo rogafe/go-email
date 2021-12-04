@@ -5,6 +5,7 @@ type Config struct {
 	LocalFolder string    `json:"local_folder"`
 	Wkhtmltopdf string    `json:"wkhtmltopdf"`
 	Accounts    []Account `json:"accounts"`
+	Verbose     bool      `json:"verbose"`
 }
 
 type Account struct {
@@ -51,4 +52,10 @@ type Installed struct {
 	AuthProviderX509CERTURL string   `json:"auth_provider_x509_cert_url"`
 	ClientSecret            string   `json:"client_secret"`
 	RedirectUris            []string `json:"redirect_uris"`
+}
+
+type Image struct {
+	ImageType      string
+	ImageContentID string
+	ImageName      string
 }

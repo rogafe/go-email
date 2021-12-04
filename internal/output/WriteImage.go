@@ -13,7 +13,7 @@ import (
 	"github.com/emersion/go-message/mail"
 )
 
-func WriteAttachement(eml string, account structs.Account) {
+func WriteImage(eml string, account structs.Account) {
 	mr, err := mail.CreateReader(strings.NewReader(eml))
 	if err != nil {
 		log.Println(err)
@@ -32,18 +32,6 @@ func WriteAttachement(eml string, account structs.Account) {
 
 			// log.Printf("Got attachment==========")
 
-			log.Println(p.Header.Get("Content-Description"))
-		} else {
-			log.Println(p.Header.Get("Content-Type"))
-		}
-
-		switch h := p.Header.(type) {
-		case *mail.AttachmentHeader:
-
-			log.Printf("Got attachment==========")
-			// This is an attachment
-			attachmentName, _ := h.Filename()
-			// log.Panic("39: " + attachmentName)
 			var folderName string
 			if MessageId, err := header.AddressList("Message-Id"); err == nil {
 				if len(MessageId) != 0 {
@@ -51,19 +39,22 @@ func WriteAttachement(eml string, account structs.Account) {
 					folderName = strings.ReplaceAll(a, ">", "")
 				}
 			}
+			imageName := p.Header.Get("Content-Description")
 
 			folder := fmt.Sprintf("%s/%s/%s/%s", account.LocalFolder, account.User, account.RemoteFolder, folderName)
 
 			utils.CreateFolder(folder)
 
-			log.Printf("Got attachment: %v", attachmentName)
+			log.Printf("Got attachment: %v", imageName)
 			b, errp := ioutil.ReadAll(p.Body)
 			fmt.Println("errp ===== :", errp)
-			err := ioutil.WriteFile(fmt.Sprintf("%s/%s", folder, attachmentName), b, 0777)
+			err := ioutil.WriteFile(fmt.Sprintf("%s/%s", folder, imageName), b, 0777)
 
 			if err != nil {
 				log.Println("attachment err: ", err)
 			}
 		}
+
 	}
+
 }
