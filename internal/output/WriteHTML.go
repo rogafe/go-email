@@ -58,6 +58,7 @@ func WriteHTML(eml string, account structs.Account, outputType string) (HtmlStri
 	// clean charset iso-8859-1
 
 	HtmlString = strings.Replace(HtmlString, `<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">`, `<meta http-equiv="Content-Type" content="text/html; charset=utf-8">`, -1)
+	HtmlString = strings.Replace(HtmlString, `<meta http-equiv="Content-Type" content="text/html; charset=Windows-1252">`, `<meta http-equiv="Content-Type" content="text/html; charset=utf-8">`, -1)
 
 	var filename string
 	if MessageId, err := header.AddressList("Message-Id"); err == nil {
@@ -74,11 +75,8 @@ func WriteHTML(eml string, account structs.Account, outputType string) (HtmlStri
 		a := strings.ReplaceAll(cid, "<", "")
 		cid = strings.ReplaceAll(a, ">", "")
 
-		if strings.Contains(HtmlString, cid) {
-			// 	log.Panic("tolo")
-			log.Println("yolo")
-			HtmlString = strings.Replace(HtmlString, cid, IMG.ImageName, -1)
-		}
+		HtmlString = strings.Replace(HtmlString, cid, IMG.ImageName, -1)
+
 	}
 
 	switch outputType {

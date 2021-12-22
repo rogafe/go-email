@@ -15,7 +15,7 @@ func WritePDF(eml string, account structs.Account) {
 
 	mr, err := mail.CreateReader(strings.NewReader(eml))
 	if err != nil {
-		log.Println(err)
+		log.Panicln(err)
 	}
 
 	header := mr.Header
@@ -25,8 +25,10 @@ func WritePDF(eml string, account structs.Account) {
 		log.Panic(err)
 	}
 	pdfg.Dpi.Set(600)
-	pdfg.NoCollate.Set(false)
+	pdfg.NoCollate.Set(true)
 	pdfg.MarginBottom.Set(40)
+	pdfg.Cover.EnableLocalFileAccess.Set(true)
+	pdfg.Grayscale.Set(true)
 
 	file := "message.pdf"
 	var filename string
@@ -40,23 +42,21 @@ func WritePDF(eml string, account structs.Account) {
 
 	out := WriteHTML(eml, account, "string")
 
-	pdfg.AddPage(wkhtmltopdf.NewPageReader(strings.NewReader(out)))
+	page := wkhtmltopdf.NewPageReader(strings.NewReader(out))
+	page.EnableLocalFileAccess.Set(true)
+	pdfg.AddPage(page)
 
 	// Create PDF document in internal buffer
 	err = pdfg.Create()
 	if err != nil {
-		log.Println(err)
+		log.Panicln(err)
 	}
 
 	utils.CreateFolder(folder)
-	// err = ioutil.WriteFile(fmt.Sprintf("%s/message.html", folder), []byte(HtmlString), 0644)
-	// if err != nil {
-	// 	log.Println(err)
-	// }
-	// Write buffer contents to file on disk
+
 	err = pdfg.WriteFile(fmt.Sprintf("%s/%s", folder, file))
 	if err != nil {
-		log.Fatal(err)
+		log.Panicln(err)
 	}
 
 	fmt.Println("Done")

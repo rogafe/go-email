@@ -28,14 +28,12 @@ func WriteAttachement(eml string, account structs.Account) {
 			log.Fatal(err)
 		}
 
-		if strings.Contains(p.Header.Get("Content-Type"), "image") {
+		// if strings.Contains(p.Header.Get("Content-Type"), "image") {
 
-			// log.Printf("Got attachment==========")
+		// 	// log.Printf("Got attachment==========")
 
-			log.Println(p.Header.Get("Content-Description"))
-		} else {
-			log.Println(p.Header.Get("Content-Type"))
-		}
+		// 	log.Println(p.Header.Get("Content-Description"))
+		// }
 
 		switch h := p.Header.(type) {
 		case *mail.AttachmentHeader:

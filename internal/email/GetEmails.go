@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"log"
 
+	pb "github.com/cheggaaa/pb/v3"
 	"github.com/rogafe/go-email/internal/auth"
 	"github.com/rogafe/go-email/internal/output"
 	"github.com/rogafe/go-email/internal/structs"
@@ -76,13 +77,14 @@ func GetEmails(account structs.Account) {
 		done <- c.Fetch(seqset, items, messages)
 	}()
 
-	log.Println("All the e-mail have been downloaded, converting to EML")
-
-	// sl := utils.ChanToSlice(messages).([]*imap.Message)
 	var i int
+
+	var Messages []structs.Messages
+	bar := pb.Full.Start(int(mbox.Messages))
 	for msg := range messages {
 
-		log.Printf("Email %d out of %d", i, mbox.Messages)
+		bar.Increment()
+		// log.Printf("Email %d out of %d", i, mbox.Messages)
 		if msg == nil {
 			log.Fatal("Server didn't returned message")
 		}
@@ -91,10 +93,23 @@ func GetEmails(account structs.Account) {
 			log.Fatal("Server didn't returned message body")
 		}
 		eml := utils.StreamToString(r)
-
-		output.WriteOutput(eml, account)
+		msgs := structs.Messages{
+			EML:     eml,
+			Account: account,
+		}
+		Messages = append(Messages, msgs)
 
 		i++
 	}
+	bar.Finish()
+
+	log.Println("All the e-mail have been downloaded")
+	if err := <-done; err != nil {
+		log.Fatal(err)
+	}
+
+	// log.Println(len(Messages))
+
+	output.WriteOutput(Messages)
 
 }

@@ -44,8 +44,6 @@ func WriteJSON(eml string, account structs.Account) {
 		Email.Subject = subject
 	}
 
-	// var Test []string
-	// // Process each message's part
 	for {
 		p, err := mr.NextPart()
 		if err == io.EOF {
@@ -53,12 +51,7 @@ func WriteJSON(eml string, account structs.Account) {
 		} else if err != nil {
 			log.Fatal(err)
 		}
-		// switch type := p.Header.Get("Content-Type") {
-		// case strings.Contains(type, "text/html"):
-		// 	b, _ := ioutil.ReadAll(p.Body)
-		// 	Email.Body = string(b)
-		// 	log.Println(len(Email.Body))
-		// }
+
 		if strings.Contains(p.Header.Get("Content-Type"), "text/html") {
 			b, _ := ioutil.ReadAll(p.Body)
 			Email.Body = string(b)
@@ -67,13 +60,10 @@ func WriteJSON(eml string, account structs.Account) {
 		}
 	}
 
-	// log.Println(len(Email.Body))
-
 	json, err := json.MarshalIndent(Email, "", " ")
 	if err != nil {
 		log.Println(err)
 	}
-	// fmt.Println(string(json))
 
 	var filename string
 	if MessageId, err := header.AddressList("Message-Id"); err == nil {
@@ -83,8 +73,6 @@ func WriteJSON(eml string, account structs.Account) {
 			filename = strings.ReplaceAll(a, ">", "")
 		}
 	}
-
-	// log.Println()
 
 	folder := fmt.Sprintf("%s/%s/%s/%s", account.LocalFolder, account.User, account.RemoteFolder, filename)
 

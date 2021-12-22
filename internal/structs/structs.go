@@ -8,6 +8,11 @@ type Config struct {
 	Verbose     bool      `json:"verbose"`
 }
 
+type Messages struct {
+	EML     string
+	Account Account
+}
+
 type Account struct {
 	Name               string   `json:"name"`
 	LocalFolder        string   `json:"local_folder"`

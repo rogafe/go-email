@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"log"
 
+	pb "github.com/cheggaaa/pb/v3"
 	"github.com/rogafe/go-email/internal/auth"
 	"github.com/rogafe/go-email/internal/output"
 	"github.com/rogafe/go-email/internal/structs"
@@ -108,8 +109,15 @@ func GetMessages(c *client.Client, box []*imap.MailboxInfo, account structs.Acco
 				log.Println("All the e-mail have been downloaded, converting to EML")
 
 				// sl := utils.ChanToSlice(messages).([]*imap.Message)
+
+				var Messages []structs.Messages
+				// bar := pb.Full.Start(len(messages))
+				bar := pb.Full.Start(int(mbox.Messages))
+
 				var i int
 				for msg := range messages {
+
+					bar.Increment()
 
 					log.Printf("Email %d out of %d", i, mbox.Messages)
 					if msg == nil {
@@ -122,13 +130,19 @@ func GetMessages(c *client.Client, box []*imap.MailboxInfo, account structs.Acco
 					eml := utils.StreamToString(r)
 					account.RemoteFolder = m.Name
 
-					log.Println(account.OutputTypes)
-
-					output.WriteOutput(eml, account)
+					msgs := structs.Messages{
+						EML:     eml,
+						Account: account,
+					}
+					Messages = append(Messages, msgs)
 
 					i++
 
 				}
+				bar.Finish()
+
+				output.WriteOutput(Messages)
+
 			}
 		}
 	}
