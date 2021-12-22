@@ -13,7 +13,7 @@ import (
 	"github.com/emersion/go-message/mail"
 )
 
-func WriteHTML(eml string, account structs.Account) {
+func WriteHTML(eml string, account structs.Account, outputType string) (HtmlString string) {
 	mr, err := mail.CreateReader(strings.NewReader(eml))
 	if err != nil {
 		log.Println(err)
@@ -53,11 +53,12 @@ func WriteHTML(eml string, account structs.Account) {
 		}
 	}
 
-	HtmlString := string(Body)
+	HtmlString = string(Body)
 
 	// clean charset iso-8859-1
 
 	HtmlString = strings.Replace(HtmlString, `<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">`, `<meta http-equiv="Content-Type" content="text/html; charset=utf-8">`, -1)
+	HtmlString = strings.Replace(HtmlString, `<meta http-equiv="Content-Type" content="text/html; charset=Windows-1252">`, `<meta http-equiv="Content-Type" content="text/html; charset=utf-8">`, -1)
 
 	var filename string
 	if MessageId, err := header.AddressList("Message-Id"); err == nil {
@@ -74,17 +75,21 @@ func WriteHTML(eml string, account structs.Account) {
 		a := strings.ReplaceAll(cid, "<", "")
 		cid = strings.ReplaceAll(a, ">", "")
 
-		if strings.Contains(HtmlString, cid) {
-			// 	log.Panic("tolo")
-			log.Println("yolo")
-			HtmlString = strings.Replace(HtmlString, cid, IMG.ImageName, -1)
-		}
+		HtmlString = strings.Replace(HtmlString, cid, IMG.ImageName, -1)
+
 	}
 
-	utils.CreateFolder(folder)
-	err = ioutil.WriteFile(fmt.Sprintf("%s/message.html", folder), []byte(HtmlString), 0644)
-	if err != nil {
-		log.Println(err)
+	switch outputType {
+	case "file":
+		utils.CreateFolder(folder)
+		err = ioutil.WriteFile(fmt.Sprintf("%s/message.html", folder), []byte(HtmlString), 0644)
+		if err != nil {
+			log.Println(err)
+		}
+	case "string":
+		return HtmlString
 	}
+
+	return ""
 
 }
