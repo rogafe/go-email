@@ -1,16 +1,39 @@
 package output
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"strings"
+	"text/template"
 
 	"github.com/rogafe/go-email/internal/structs"
 	"github.com/rogafe/go-email/internal/utils"
 
 	"github.com/emersion/go-message/mail"
+)
+
+var (
+	BasicHTML string = ` 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message</title>
+</head>
+<body>
+    <div>
+        <p>
+            {{.Items}}
+        </p>
+    </div>
+</body>
+</html>
+`
 )
 
 func WriteHTML(eml string, account structs.Account, outputType string) (HtmlString string) {
@@ -36,8 +59,35 @@ func WriteHTML(eml string, account structs.Account, outputType string) (HtmlStri
 			if err != nil {
 				log.Println(err)
 			}
-			fmt.Println(len(string(b)))
 			Body = b
+
+		} else if strings.Contains(p.Header.Get("Content-Type"), "text/plain") {
+			b, err := ioutil.ReadAll(p.Body)
+			if err != nil {
+				log.Println(err)
+			}
+
+			message := string(b)
+
+			t, err := template.New("webpage").Parse(BasicHTML)
+			if err != nil {
+				log.Println(err)
+			}
+
+			data := struct {
+				Items string
+			}{
+				Items: message,
+			}
+
+			// var output io.Writer
+			var output bytes.Buffer
+
+			err = t.Execute(&output, data)
+			if err != nil {
+				log.Println(err)
+			}
+			Body = output.Bytes()
 
 		} else if strings.Contains(p.Header.Get("Content-Type"), "image") {
 
