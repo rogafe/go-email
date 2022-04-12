@@ -38,7 +38,7 @@ func WriteAttachement(eml string, account structs.Account) {
 		switch h := p.Header.(type) {
 		case *mail.AttachmentHeader:
 
-			log.Printf("Got attachment==========")
+			// log.Printf("Got attachment==========")
 			// This is an attachment
 			attachmentName, _ := h.Filename()
 			// log.Panic("39: " + attachmentName)
@@ -54,8 +54,11 @@ func WriteAttachement(eml string, account structs.Account) {
 
 			utils.CreateFolder(folder)
 
-			log.Printf("Got attachment: %v", attachmentName)
+			// log.Printf("Got attachment: %v", attachmentName)
 			b, errp := ioutil.ReadAll(p.Body)
+			if errp != nil {
+				log.Println(errp)
+			}
 			fmt.Println("errp ===== :", errp)
 			err := ioutil.WriteFile(fmt.Sprintf("%s/%s", folder, attachmentName), b, 0777)
 
