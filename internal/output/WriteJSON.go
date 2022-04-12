@@ -15,8 +15,6 @@ import (
 )
 
 func WriteJSON(eml string, account structs.Account) {
-	log.Println("json")
-
 	mr, err := mail.CreateReader(strings.NewReader(eml))
 	if err != nil {
 		log.Println(err)

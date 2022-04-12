@@ -49,7 +49,7 @@ func WritePDF(eml string, account structs.Account) {
 	// Create PDF document in internal buffer
 	err = pdfg.Create()
 	if err != nil {
-		log.Panicln(err)
+		log.Println(err)
 	}
 
 	utils.CreateFolder(folder)
