@@ -56,9 +56,9 @@ func WritePDF(eml string, account structs.Account) {
 
 	err = pdfg.WriteFile(fmt.Sprintf("%s/%s", folder, file))
 	if err != nil {
-		log.Panicln(err)
+		log.Println(err)
 	}
 
-	fmt.Println("Done")
+	log.Println("Done")
 
 }

@@ -69,7 +69,6 @@ func ListMailbox(c *client.Client) (box []*imap.MailboxInfo) {
 		done <- c.List("", "*", mailboxes)
 	}()
 
-	// log.Println("Mailboxes:")
 	for m := range mailboxes {
 		box = append(box, m)
 	}
@@ -83,7 +82,7 @@ func ListMailbox(c *client.Client) (box []*imap.MailboxInfo) {
 func GetMessages(c *client.Client, box []*imap.MailboxInfo, account structs.Account) {
 
 	for _, m := range box {
-		// Select INBOX
+		// Select messagebox
 		mbox, err := c.Select(m.Name, false)
 		if err != nil {
 			log.Println(err)
@@ -108,10 +107,7 @@ func GetMessages(c *client.Client, box []*imap.MailboxInfo, account structs.Acco
 
 				log.Println("All the e-mail have been downloaded, converting to EML")
 
-				// sl := utils.ChanToSlice(messages).([]*imap.Message)
-
 				var Messages []structs.Messages
-				// bar := pb.Full.Start(len(messages))
 				bar := pb.Full.Start(int(mbox.Messages))
 
 				var i int

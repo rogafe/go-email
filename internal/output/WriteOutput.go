@@ -14,7 +14,6 @@ func WriteOutput(Messages []structs.Messages) {
 			switch outType {
 			case "eml":
 				log.Println("eml")
-				// 		// go WriteEML(eml, account)
 				WriteEML(msg.EML, msg.Account)
 			case "html":
 				log.Println("html")
@@ -39,33 +38,4 @@ func WriteOutput(Messages []structs.Messages) {
 			}
 		}
 	}
-	// for _, out := range account.OutputTypes {
-	// 	log.Println(out)
-	// 	// 	switch out {
-	// 	// 	case "eml":
-	// 	// 		log.Println("eml")
-	// 	// 		// go WriteEML(eml, account)
-	// 	// 		WriteEML(eml, account)
-	// 	// 	case "html":
-	// 	// 		log.Println("html")
-	// 	// 		// go WriteHTML(eml, account, "file")
-	// 	// 		WriteHTML(eml, account, "file")
-	// 	// 	case "json":
-	// 	// 		log.Println("json")
-	// 	// 		// go WriteJSON(eml, account)
-	// 	// 		WriteJSON(eml, account)
-	// 	// 	case "attachement":
-	// 	// 		log.Println("attachement")
-	// 	// 		// go WriteAttachement(eml, account)
-	// 	// 		WriteAttachement(eml, account)
-	// 	// 	case "image":
-	// 	// 		log.Println("image")
-	// 	// 		// go WriteImage(eml, account)
-	// 	// 		WriteImage(eml, account)
-	// 	// 	case "pdf":
-	// 	// 		log.Println("pdf")
-	// 	// 		// go WritePDF(eml, account)
-	// 	// 		WritePDF(eml, account)
-	// 	// 	}
-	// }
 }
