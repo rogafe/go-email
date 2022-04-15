@@ -64,10 +64,10 @@ func GetEmails(account structs.Account) {
 
 	log.Printf("Downloding %d emails\n", mbox.Messages)
 	seqset := new(imap.SeqSet)
+
+	//set range to all message in inbox might want to control that in the future
 	seqset.AddRange(1, mbox.Messages)
-	// seqset.AddRange(mbox.Messages, mbox.Messages)
-	// seqset.AddRange(mbox.Messages-5, mbox.Messages)
-	// var Messages []*imap.Message
+
 	messages := make(chan *imap.Message, mbox.Messages)
 	done := make(chan error, 1)
 	var section imap.BodySectionName
@@ -84,7 +84,6 @@ func GetEmails(account structs.Account) {
 	for msg := range messages {
 
 		bar.Increment()
-		// log.Printf("Email %d out of %d", i, mbox.Messages)
 		if msg == nil {
 			log.Fatal("Server didn't returned message")
 		}
@@ -107,8 +106,6 @@ func GetEmails(account structs.Account) {
 	if err := <-done; err != nil {
 		log.Fatal(err)
 	}
-
-	// log.Println(len(Messages))
 
 	output.WriteOutput(Messages)
 

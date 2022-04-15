@@ -25,40 +25,36 @@ func main() {
 
 	}
 
-	// var config structs.Config
-
 	config := structs.Config{
 		LocalFolder: cfg.Section("go-email").Key("local_folder").String(),
 		Wkhtmltopdf: cfg.Section("go-email").Key("wkhtmltopdf").String(),
 	}
 
 	for _, section := range cfg.SectionStrings() {
-		if section != ini.DefaultSection {
-			if section != "go-email" {
-				var account structs.Account
-				account.Name = section
-				config.Accounts = append(config.Accounts, account)
-			}
-		}
-	}
-	for i := range config.Accounts {
-		Name := config.Accounts[i].Name
-		InsecureSkipVerify, _ := cfg.Section(Name).Key("insecureskipverify").Bool()
-		TLS, _ := cfg.Section(Name).Key("ssl").Bool()
+		log.Println(section)
+		if section != ini.DefaultSection && section != "go-email" {
 
-		account := structs.Account{
-			Name:               Name,
-			LocalFolder:        config.LocalFolder,
-			Uri:                fmt.Sprintf("%s:%s", cfg.Section(Name).Key("host").String(), cfg.Section(Name).Key("port").String()),
-			User:               cfg.Section(Name).Key("username").String(),
-			Password:           cfg.Section(Name).Key("password").String(),
-			Oauth2:             cfg.Section(Name).Key("oauth2").String(),
-			RemoteFolder:       cfg.Section(Name).Key("remote_folder").String(),
-			TLS:                TLS,
-			InsecureSkipVerify: InsecureSkipVerify,
-			OutputTypes:        strings.Split(cfg.Section("go-email").Key("output_types").String(), ","),
+			Name := section
+			InsecureSkipVerify, _ := cfg.Section(Name).Key("insecureskipverify").Bool()
+			TLS, _ := cfg.Section(Name).Key("ssl").Bool()
+
+			account := structs.Account{
+				Name:               Name,
+				LocalFolder:        config.LocalFolder,
+				Uri:                fmt.Sprintf("%s:%s", cfg.Section(Name).Key("host").String(), cfg.Section(Name).Key("port").String()),
+				User:               cfg.Section(Name).Key("username").String(),
+				Password:           cfg.Section(Name).Key("password").String(),
+				Oauth2:             cfg.Section(Name).Key("oauth2").String(),
+				RemoteFolder:       cfg.Section(Name).Key("remote_folder").String(),
+				TLS:                TLS,
+				InsecureSkipVerify: InsecureSkipVerify,
+				OutputTypes:        strings.Split(cfg.Section("go-email").Key("output_types").String(), ","),
+			}
+
+			config.Accounts = append(config.Accounts, account)
+
 		}
-		config.Accounts[i] = account
+
 	}
 
 	email.Get(config)

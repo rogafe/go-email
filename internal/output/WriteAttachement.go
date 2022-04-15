@@ -28,20 +28,10 @@ func WriteAttachement(eml string, account structs.Account) {
 			log.Fatal(err)
 		}
 
-		// if strings.Contains(p.Header.Get("Content-Type"), "image") {
-
-		// 	// log.Printf("Got attachment==========")
-
-		// 	log.Println(p.Header.Get("Content-Description"))
-		// }
-
 		switch h := p.Header.(type) {
 		case *mail.AttachmentHeader:
 
-			// log.Printf("Got attachment==========")
-			// This is an attachment
 			attachmentName, _ := h.Filename()
-			// log.Panic("39: " + attachmentName)
 			var folderName string
 			if MessageId, err := header.AddressList("Message-Id"); err == nil {
 				if len(MessageId) != 0 {
@@ -54,12 +44,11 @@ func WriteAttachement(eml string, account structs.Account) {
 
 			utils.CreateFolder(folder)
 
-			// log.Printf("Got attachment: %v", attachmentName)
 			b, errp := ioutil.ReadAll(p.Body)
 			if errp != nil {
 				log.Println(errp)
 			}
-			fmt.Println("errp ===== :", errp)
+			log.Println("errp ===== :", errp)
 			err := ioutil.WriteFile(fmt.Sprintf("%s/%s", folder, attachmentName), b, 0777)
 
 			if err != nil {
