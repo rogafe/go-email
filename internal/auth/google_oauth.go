@@ -1,14 +1,12 @@
 package auth
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 
 	"github.com/rogafe/go-email/internal/structs"
 	"github.com/rogafe/go-email/internal/utils"
@@ -57,27 +55,31 @@ func WriteToken(token *oauth2.Token, account structs.Account) {
 
 func GoogleOauth(account structs.Account) (token *oauth2.Token) {
 
-	exist, err := utils.FileExists(fmt.Sprintf("./%s/%s/token.json", account.LocalFolder, account.User))
-	if err != nil {
-		log.Println(err)
-	}
-	if !exist {
-		googleOauthConfig := LoadConfiguration("secret.json")
+	// exist, err := utils.FileExists(fmt.Sprintf("./%s/%s/token.json", account.LocalFolder, account.User))
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+	// if !exist {
+	// 	googleOauthConfig := LoadConfiguration("secret.json")
 
-		oauthStateString := utils.GeneratePassword(10, 60)
+	// 	oauthStateString := utils.GeneratePassword(10, 60)
 
-		fmt.Printf("Please go to this address to get the token\n%s\n", googleOauthConfig.AuthCodeURL(oauthStateString))
-		reader := bufio.NewReader(os.Stdin)
+	// 	log.Printf("Please go to this address to get the token\n%s\n", googleOauthConfig.AuthCodeURL(oauthStateString))
+	// 	reader := bufio.NewReader(os.Stdin)
 
-		fmt.Print("copy the token here >>> ")
-		userInput, _ := reader.ReadString('\n')
-		token = requestToken(userInput, googleOauthConfig)
-		WriteToken(token, account)
-	} else {
-		token = LoadToken(fmt.Sprintf("./%s/%s/token.json", account.LocalFolder, account.User))
-	}
+	// 	fmt.Print("copy the token here >>> ")
+	// 	userInput, _ := reader.ReadString('\n')
+	// 	token = requestToken(userInput, googleOauthConfig)
+	// 	WriteToken(token, account)
+	// } else {
+	// 	token = LoadToken(fmt.Sprintf("./%s/%s/token.json", account.LocalFolder, account.User))
+	// }
 
 	return token
+
+}
+
+func webApp() {
 
 }
 

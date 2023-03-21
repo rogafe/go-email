@@ -21,7 +21,7 @@ func WriteOutput(Messages []structs.Messages) {
 			case "json":
 				log.Println("json")
 				// go WriteJSON(eml, account)
-				WriteJSON(msg.EML, msg.Account)
+				// WriteJSON(msg.EML, msg.Account)
 			case "attachement":
 				log.Println("attachement")
 				// go WriteAttachement(eml, account)

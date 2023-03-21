@@ -6,9 +6,11 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"regexp"
 	"strings"
 	"text/template"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/rogafe/go-email/internal/structs"
 	"github.com/rogafe/go-email/internal/utils"
 
@@ -93,14 +95,14 @@ func WriteHTML(eml string, account structs.Account, outputType string) (HtmlStri
 
 			tmpImage.ImageType = p.Header.Get("Content-Type")
 			tmpImage.ImageContentID = p.Header.Get("Content-ID")
-			tmpImage.ImageName = p.Header.Get("Content-Description")
-
-			log.Println(p.Header.Get("filename"))
+			// tmpImage.ImageName = p.Header.Get("Content-Description")
+			// log.Println(tmpImage)
 
 			ImageStruct = append(ImageStruct, tmpImage)
-		} else {
-			log.Println(p.Header.Get("Content-Type"))
 		}
+		// else {
+		// log.Println(p.Header.Get("Content-Type"))
+		// }
 	}
 
 	HtmlString = string(Body)
@@ -119,14 +121,43 @@ func WriteHTML(eml string, account structs.Account, outputType string) (HtmlStri
 	}
 	folder := fmt.Sprintf("%s/%s/%s/%s", account.LocalFolder, account.User, account.RemoteFolder, filename)
 
-	for _, IMG := range ImageStruct {
-		log.Println(IMG.ImageContentID)
-		cid := fmt.Sprintf("cid:%s", IMG.ImageContentID)
-		a := strings.ReplaceAll(cid, "<", "")
-		cid = strings.ReplaceAll(a, ">", "")
+	// Load the HTML document
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(HtmlString))
+	if err != nil {
+		log.Fatal(err)
+	}
 
-		HtmlString = strings.Replace(HtmlString, cid, IMG.ImageName, -1)
+	doc.Find("img").Each(func(i int, s *goquery.Selection) {
+		src, exists := s.Attr("src")
+		if exists {
+			log.Println(src)
+			for _, img := range ImageStruct {
+				log.Println(img.ImageType)
 
+				pattern := `name="(.+?)"`
+
+				re := regexp.MustCompile(pattern)
+				match := re.FindStringSubmatch(img.ImageType)
+
+				if len(match) > 1 {
+					fmt.Println(match[1])
+				} else {
+					fmt.Println("No match found")
+				}
+
+				img.ImageType = match[1]
+
+				img.ImageContentID = "cid:" + strings.Trim(img.ImageContentID, "<>")
+				if strings.Contains(src, img.ImageContentID) {
+					fmt.Printf("Image %d matched with URL %s\n", i+1, img.ImageContentID)
+					s.SetAttr("src", fmt.Sprintf("./attachments/%s", img.ImageType))
+				}
+			}
+		}
+	})
+	HtmlString, err = doc.Html()
+	if err != nil {
+		log.Println(err)
 	}
 
 	switch outputType {

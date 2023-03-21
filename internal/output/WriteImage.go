@@ -3,8 +3,9 @@ package output
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
+	"os"
+	"regexp"
 	"strings"
 
 	"github.com/rogafe/go-email/internal/structs"
@@ -39,17 +40,30 @@ func WriteImage(eml string, account structs.Account) {
 					folderName = strings.ReplaceAll(a, ">", "")
 				}
 			}
-			imageName := p.Header.Get("Content-Description")
+			// imageName := p.Header.Get("name")
+			ContentType := p.Header.Get("Content-Type")
 
-			folder := fmt.Sprintf("%s/%s/%s/%s", account.LocalFolder, account.User, account.RemoteFolder, folderName)
+			pattern := `name="(.+?)"`
 
+			re := regexp.MustCompile(pattern)
+			match := re.FindStringSubmatch(ContentType)
+
+			if len(match) > 1 {
+				fmt.Println(match[1])
+			} else {
+				fmt.Println("No match found")
+			}
+
+			imageName := match[1]
+
+			folder := fmt.Sprintf("%s/%s/%s/%s/attachments", account.LocalFolder, account.User, account.RemoteFolder, folderName)
+			log.Println(folder)
 			utils.CreateFolder(folder)
 
 			log.Printf("Got attachment: %v", imageName)
-			b, errp := ioutil.ReadAll(p.Body)
+			b, errp := io.ReadAll(p.Body)
 			fmt.Println("errp ===== :", errp)
-			err := ioutil.WriteFile(fmt.Sprintf("%s/%s", folder, imageName), b, 0777)
-
+			err := os.WriteFile(fmt.Sprintf("%s/%s", folder, imageName), b, 0777)
 			if err != nil {
 				log.Println("attachment err: ", err)
 			}
