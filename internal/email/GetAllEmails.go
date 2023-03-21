@@ -5,8 +5,8 @@ import (
 	"log"
 
 	pb "github.com/cheggaaa/pb/v3"
-	"github.com/rogafe/go-email/internal/auth"
 	"github.com/rogafe/go-email/internal/output"
+	"github.com/rogafe/go-email/internal/server"
 	"github.com/rogafe/go-email/internal/structs"
 	"github.com/rogafe/go-email/internal/utils"
 
@@ -23,7 +23,7 @@ func GetAllEmails(account structs.Account) {
 	case account.TLS && account.InsecureSkipVerify:
 		c, err = client.DialTLS(account.Uri, &tls.Config{InsecureSkipVerify: true})
 	case account.TLS && !account.InsecureSkipVerify:
-		c, err = client.DialTLS(account.Uri, nil)
+		c, err = client.DialTLS(account.Uri, &tls.Config{})
 	case !account.TLS:
 		c, err = client.Dial(account.Uri)
 	}
@@ -39,7 +39,13 @@ func GetAllEmails(account structs.Account) {
 	// Login
 	switch account.Oauth2 {
 	case "gmail":
-		token := auth.GoogleOauth(account)
+		// token := auth.GoogleOauth(account)
+
+		token, err := server.OauthServer()
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println(token)
 
 		err = c.Authenticate(sasl.NewOAuthBearerClient(&sasl.OAuthBearerOptions{
 			Username: account.User,
