@@ -5,24 +5,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"os/exec"
 	"runtime"
 
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 )
 
-func OauthServer() (token *oauth2.Token, err error) {
-	// Load the Google OAuth secrets from the secret.json file
-	b, err := os.ReadFile("secret.json")
-	if err != nil {
-		return nil, fmt.Errorf("failed to read secret file: %v", err)
-	}
-	conf, err := google.ConfigFromJSON(b, "https://mail.google.com")
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse secret file: %v", err)
-	}
+func OauthServer(conf *oauth2.Config) (token *oauth2.Token, err error) {
 
 	// Start an HTTP server that listens on localhost:8080
 	authCodeCh := make(chan string)
@@ -39,9 +28,7 @@ func OauthServer() (token *oauth2.Token, err error) {
 	go http.ListenAndServe(":8080", nil)
 
 	// Wait for the user to authorize the application and get the authorization code
-	fmt.Println("Please visit the following URL to authorize the application:")
 	url := conf.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
-	fmt.Println(url)
 	openBrowser(url)
 	code := <-authCodeCh
 

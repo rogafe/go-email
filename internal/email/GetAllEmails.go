@@ -5,8 +5,8 @@ import (
 	"log"
 
 	pb "github.com/cheggaaa/pb/v3"
+	"github.com/rogafe/go-email/internal/auth"
 	"github.com/rogafe/go-email/internal/output"
-	"github.com/rogafe/go-email/internal/server"
 	"github.com/rogafe/go-email/internal/structs"
 	"github.com/rogafe/go-email/internal/utils"
 
@@ -39,9 +39,7 @@ func GetAllEmails(account structs.Account) {
 	// Login
 	switch account.Oauth2 {
 	case "gmail":
-		// token := auth.GoogleOauth(account)
-
-		token, err := server.OauthServer()
+		token := auth.GoogleOauth(account)
 		if err != nil {
 			log.Println(err)
 		}
