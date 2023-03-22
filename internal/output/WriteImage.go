@@ -34,19 +34,39 @@ func WriteImage(eml string, account structs.Account) {
 			// log.Printf("Got attachment==========")
 
 			var folderName string
-			if MessageId, err := header.AddressList("Message-Id"); err == nil {
-				if len(MessageId) != 0 {
-					a := strings.ReplaceAll(MessageId[0].String(), "<", "")
-					folderName = strings.ReplaceAll(a, ">", "")
+			// if MessageId, err := header.AddressList("Message-Id"); err == nil {
+			// 	if len(MessageId) != 0 {
+			// 		a := strings.ReplaceAll(MessageId[0].String(), "<", "")
+			// 		folderName = strings.ReplaceAll(a, ">", "")
+			// 	}
+			// }
+			var SenderString, CleanedEmail string
+			if Sender, err := header.AddressList("From"); err == nil {
+				if len(Sender) != 0 {
+					CleanedEmail = strings.ReplaceAll(Sender[0].String(), "[<", "")
+					CleanedEmail = strings.ReplaceAll(CleanedEmail, ">]", "")
 				}
 			}
+			//
+
+			re := regexp.MustCompile(`<(.+)>`) // match "<", followed by one or more characters, followed by ">"
+			match := re.FindStringSubmatch(CleanedEmail)
+			if len(match) > 1 {
+				SenderString = strings.Trim(match[1], "<>")
+			}
+
+			SubjectString, err := header.Subject()
+			if err != nil {
+				log.Println(err)
+			}
+			folderName = fmt.Sprintf("%s-%s", SenderString, SubjectString)
 			// imageName := p.Header.Get("name")
 			ContentType := p.Header.Get("Content-Type")
 
 			pattern := `name="(.+?)"`
 
-			re := regexp.MustCompile(pattern)
-			match := re.FindStringSubmatch(ContentType)
+			re = regexp.MustCompile(pattern)
+			match = re.FindStringSubmatch(ContentType)
 
 			if len(match) > 1 {
 				fmt.Println(match[1])
@@ -63,7 +83,7 @@ func WriteImage(eml string, account structs.Account) {
 			log.Printf("Got attachment: %v", imageName)
 			b, errp := io.ReadAll(p.Body)
 			fmt.Println("errp ===== :", errp)
-			err := os.WriteFile(fmt.Sprintf("%s/%s", folder, imageName), b, 0777)
+			err = os.WriteFile(fmt.Sprintf("%s/%s", folder, imageName), b, 0777)
 			if err != nil {
 				log.Println("attachment err: ", err)
 			}

@@ -3,8 +3,9 @@ package output
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
+	"os"
+	"regexp"
 	"strings"
 
 	"github.com/rogafe/go-email/internal/structs"
@@ -33,23 +34,44 @@ func WriteAttachement(eml string, account structs.Account) {
 
 			attachmentName, _ := h.Filename()
 			var folderName string
-			if MessageId, err := header.AddressList("Message-Id"); err == nil {
-				if len(MessageId) != 0 {
-					a := strings.ReplaceAll(MessageId[0].String(), "<", "")
-					folderName = strings.ReplaceAll(a, ">", "")
+			// if MessageId, err := header.AddressList("Message-Id"); err == nil {
+			// 	if len(MessageId) != 0 {
+			// 		a := strings.ReplaceAll(MessageId[0].String(), "<", "")
+			// 		folderName = strings.ReplaceAll(a, ">", "")
+			// 	}
+			// }
+
+			var SenderString, CleanedEmail string
+			if Sender, err := header.AddressList("From"); err == nil {
+				if len(Sender) != 0 {
+					CleanedEmail = strings.ReplaceAll(Sender[0].String(), "[<", "")
+					CleanedEmail = strings.ReplaceAll(CleanedEmail, ">]", "")
 				}
 			}
+			//
+
+			re := regexp.MustCompile(`<(.+)>`) // match "<", followed by one or more characters, followed by ">"
+			match := re.FindStringSubmatch(CleanedEmail)
+			if len(match) > 1 {
+				SenderString = strings.Trim(match[1], "<>")
+			}
+
+			SubjectString, err := header.Subject()
+			if err != nil {
+				log.Println(err)
+			}
+			folderName = fmt.Sprintf("%s-%s", SenderString, SubjectString)
 
 			folder := fmt.Sprintf("%s/%s/%s/%s", account.LocalFolder, account.User, account.RemoteFolder, folderName)
 
 			utils.CreateFolder(folder)
 
-			b, errp := ioutil.ReadAll(p.Body)
+			b, errp := io.ReadAll(p.Body)
 			if errp != nil {
 				log.Println(errp)
 			}
 			log.Println("errp ===== :", errp)
-			err := ioutil.WriteFile(fmt.Sprintf("%s/%s", folder, attachmentName), b, 0777)
+			err = os.WriteFile(fmt.Sprintf("%s/%s", folder, attachmentName), b, 0777)
 
 			if err != nil {
 				log.Println("attachment err: ", err)
