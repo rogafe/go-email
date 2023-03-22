@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"time"
 
 	"github.com/rogafe/go-email/internal/server"
 	"github.com/rogafe/go-email/internal/structs"
@@ -67,7 +68,8 @@ func GoogleOauth(account structs.Account) (token *oauth2.Token) {
 		token = GetToken(account)
 	} else {
 		token = LoadToken(fmt.Sprintf("./%s/%s/token.json", account.LocalFolder, account.User))
-		if utils.IsAfterCurrentTime(token.Expiry) {
+		log.Println(token.Expiry, time.Now())
+		if token.Expiry.Before(time.Now()) {
 			log.Println("Token expired getting new one")
 			token = GetToken(account)
 		}
