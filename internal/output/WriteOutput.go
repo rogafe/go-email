@@ -34,7 +34,8 @@ func WriteOutput(Messages []structs.Messages) {
 				log.Println("pdf")
 				// go WritePDF(eml, account)
 				WritePDF(msg.EML, msg.Account)
-
+			case "gz":
+				WriteEMLGZ(msg.EML, msg.Account)
 			}
 		}
 	}
