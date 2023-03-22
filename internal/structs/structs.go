@@ -9,8 +9,9 @@ type Config struct {
 }
 
 type Messages struct {
-	EML     string
-	Account Account
+	EML        string
+	Account    Account
+	OutputPath string
 }
 
 type Account struct {

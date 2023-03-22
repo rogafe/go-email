@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/http"
-	"net/url"
+	"os"
+	"time"
 
+	"github.com/rogafe/go-email/internal/server"
 	"github.com/rogafe/go-email/internal/structs"
 	"github.com/rogafe/go-email/internal/utils"
 	"golang.org/x/oauth2"
@@ -41,74 +42,50 @@ func LoadToken(file string) (token *oauth2.Token) {
 }
 
 func WriteToken(token *oauth2.Token, account structs.Account) {
+	tokenStr := fmt.Sprintf("./%s/%s/token.json", account.LocalFolder, account.User)
+
 	tokenJson, err := json.MarshalIndent(token, "", "\t")
 	if err != nil {
 		log.Println(err)
 	}
 
 	utils.CreateFolder(fmt.Sprintf("./%s/%s", account.LocalFolder, account.User))
-	err = ioutil.WriteFile(fmt.Sprintf("./%s/%s/token.json", account.LocalFolder, account.User), tokenJson, 0777)
+	err = os.WriteFile(tokenStr, tokenJson, 0666)
 	if err != nil {
 		log.Println(err)
 	}
 }
 
 func GoogleOauth(account structs.Account) (token *oauth2.Token) {
+	tokenStr := fmt.Sprintf("./%s/%s/token.json", account.LocalFolder, account.User)
 
-	// exist, err := utils.FileExists(fmt.Sprintf("./%s/%s/token.json", account.LocalFolder, account.User))
-	// if err != nil {
-	// 	log.Println(err)
-	// }
-	// if !exist {
-	// 	googleOauthConfig := LoadConfiguration("secret.json")
+	exist, err := utils.FileExists(tokenStr)
+	if err != nil {
+		log.Println(err)
+	}
 
-	// 	oauthStateString := utils.GeneratePassword(10, 60)
-
-	// 	log.Printf("Please go to this address to get the token\n%s\n", googleOauthConfig.AuthCodeURL(oauthStateString))
-	// 	reader := bufio.NewReader(os.Stdin)
-
-	// 	fmt.Print("copy the token here >>> ")
-	// 	userInput, _ := reader.ReadString('\n')
-	// 	token = requestToken(userInput, googleOauthConfig)
-	// 	WriteToken(token, account)
-	// } else {
-	// 	token = LoadToken(fmt.Sprintf("./%s/%s/token.json", account.LocalFolder, account.User))
-	// }
+	if !exist {
+		token = GetToken(account)
+	} else {
+		token = LoadToken(fmt.Sprintf("./%s/%s/token.json", account.LocalFolder, account.User))
+		log.Println(token.Expiry, time.Now())
+		if token.Expiry.Before(time.Now()) {
+			log.Println("Token expired getting new one")
+			token = GetToken(account)
+		}
+	}
 
 	return token
 
 }
 
-func webApp() {
+func GetToken(account structs.Account) (token *oauth2.Token) {
+	googleOauthConfig := LoadConfiguration("secret.json")
 
-}
-
-func requestToken(userInput string, googleOauthConfig *oauth2.Config) (token *oauth2.Token) {
-	u := "https://accounts.google.com/o/oauth2/token"
-
-	data := url.Values{
-		"code":          {userInput},
-		"client_id":     {googleOauthConfig.ClientID},
-		"client_secret": {googleOauthConfig.ClientSecret},
-		"redirect_uri":  {googleOauthConfig.RedirectURL},
-		"grant_type":    {"authorization_code"},
-	}
-
-	resp, err := http.PostForm(u, data)
-
+	token, err := server.OauthServer(googleOauthConfig)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = json.Unmarshal(body, &token)
-	if err != nil {
-		log.Panic(err)
-	}
-	log.Println(token)
+	WriteToken(token, account)
 	return token
 }

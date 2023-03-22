@@ -6,3 +6,4 @@ out/
 *.cfg
 *.txt
 *.json
+go-email
